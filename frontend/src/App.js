@@ -8,20 +8,18 @@ import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [authState, setAuthState] = useState('login');
-  const [authEmail, setAuthEmail] = useState('');
+  const [authState, setAuthState] = useState("login");
+  const [authEmail, setAuthEmail] = useState("");
 
   // Load session on app start
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedEmail = localStorage.getItem("auth_email");
-    
+
     if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setUser(userData);
-      setAuthState('dashboard');
+      setUser(JSON.parse(storedUser));
+      setAuthState("dashboard");
     }
-    
     if (storedEmail) {
       setAuthEmail(storedEmail);
     }
@@ -31,67 +29,71 @@ function App() {
     localStorage.removeItem("user");
     localStorage.removeItem("auth_email");
     setUser(null);
-    setAuthEmail('');
-    setAuthState('login');
+    setAuthEmail("");
+    setAuthState("login");
   };
 
   const handleEmailSent = (email) => {
     localStorage.setItem("auth_email", email);
     setAuthEmail(email);
-    setAuthState('verify');
+    setAuthState("verify");
   };
 
   const handleLoginSuccess = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
-    setAuthState('dashboard');
+    setAuthState("dashboard");
     localStorage.removeItem("auth_email");
-    setAuthEmail('');
+    setAuthEmail("");
   };
 
   const handleBackToLogin = () => {
-    setAuthState('login');
+    setAuthState("login");
     localStorage.removeItem("auth_email");
-    setAuthEmail('');
+    setAuthEmail("");
   };
 
   return (
     <div className="app-container">
-      {authState !== 'login' && (
+      {authState !== "login" && (
         <header className="app-header">
           <div className="header-content">
             <h1>Government Portal</h1>
-            {authState === 'dashboard' && (
-              <div className="user-info">
-                <span>Welcome, {user.name}</span>
-                <button onClick={handleLogout} className="logout-btn">Logout</button>
-              </div>
-            )}
-            {authState === 'verify' && (
-              <button onClick={handleBackToLogin} className="back-btn">Back to Login</button>
-            )}
+            <div className="header-actions">
+              {authState === "dashboard" && user && (
+                <div className="user-info">
+                  <span>Welcome, {user.name}</span>
+                  <button onClick={handleLogout} className="logout-btn">
+                    Logout
+                  </button>
+                </div>
+              )}
+              {authState === "verify" && (
+                <button onClick={handleBackToLogin} className="back-btn">
+                  Back to Login
+                </button>
+              )}
+            </div>
           </div>
         </header>
       )}
-      
+
       <main className="main-content">
-        {authState === 'login' && (
-          <Login onEmailSent={handleEmailSent} />
-        )}
-        {authState === 'verify' && (
-          <EmailVerification 
-            email={authEmail} 
+        {authState === "login" && <Login onEmailSent={handleEmailSent} />}
+        {authState === "verify" && (
+          <EmailVerification
+            email={authEmail}
             onLogin={handleLoginSuccess}
             onBack={handleBackToLogin}
           />
         )}
-        {authState === 'dashboard' && user && (
+        {authState === "dashboard" && user && (
           <>
-            {user.user_type === "citizen" && <CitizenDashboard user={user} />}
-            {user.user_type === "official" && user.user_level === 1 && (
-              <OfficialDashboard level={1} user={user} />
+            {user.user_type === "citizen" && (
+              <CitizenDashboard user={user} />
             )}
-            {user.user_type === "official" && user.user_level === 2 && (
-              <OfficialDashboard level={2} user={user} />
+            {user.user_type === "official" && (
+              <OfficialDashboard level={user.user_level} user={user} />
             )}
           </>
         )}

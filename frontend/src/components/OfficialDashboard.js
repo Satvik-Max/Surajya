@@ -15,29 +15,32 @@ const OfficialDashboard = ({ level, user }) => {
   const [verifying, setVerifying] = useState(false);
 
   const fetchGrievances = useCallback(async () => {
-    setLoading(true);
-    try {
-      let query = supabase
-        .from("grievances")
-        .select("*")
-        .order("created_at", { ascending: false });
+  setLoading(true);
+  try {
+    let query = supabase
+      .from("grievances")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-      if (activeTab === "pending") {
-        query = query.eq("status", "pending");
-      } else if (activeTab === "resolved") {
-        query = query.eq("status", "resolved");
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-      setGrievances(data || []);
-    } catch (error) {
-      console.error("Error fetching grievances:", error);
-    } finally {
-      setLoading(false);
+    if (activeTab === "pending") {
+      query = query.eq("status", "pending");
+    } else if (activeTab === "resolved") {
+      query = query.eq("status", "resolved");
     }
-  }, [activeTab]);
+
+    // Filter by current official's level - ONLY SHOW GRIEVANCES ASSIGNED TO THIS LEVEL
+    query = query.eq("assigned_level", level);
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+    setGrievances(data || []);
+  } catch (error) {
+    console.error("Error fetching grievances:", error);
+  } finally {
+    setLoading(false);
+  }
+}, [activeTab, level]); // Added level to dependencies
 
   const fetchStats = useCallback(async () => {
     try {
@@ -257,12 +260,6 @@ const OfficialDashboard = ({ level, user }) => {
         >
           Resolved ({stats.resolved})
         </button>
-        <button 
-          className={activeTab === "tools" ? "active" : ""}
-          onClick={() => setActiveTab("tools")}
-        >
-          Tools
-        </button>
       </div>
       
       <div className="dashboard-content">
@@ -406,39 +403,6 @@ const OfficialDashboard = ({ level, user }) => {
                 ))}
               </div>
             )}
-          </div>
-        )}
-
-        {activeTab === "tools" && (
-          <div className="card">
-            <h3>Administrative Tools</h3>
-            <div className="tools-grid">
-              <div className="tool-item">
-                <h4>Analytics Dashboard</h4>
-                <p>View grievance statistics and trends</p>
-                <button className="action-btn">View Analytics</button>
-              </div>
-              
-              <div className="tool-item">
-                <h4>Export Data</h4>
-                <p>Export grievances data for reporting</p>
-                <button className="action-btn">Export CSV</button>
-              </div>
-              
-              <div className="tool-item">
-                <h4>User Management</h4>
-                <p>Manage system users and permissions</p>
-                <button className="action-btn">Manage Users</button>
-              </div>
-
-              {level >= 2 && (
-                <div className="tool-item">
-                  <h4>System Settings</h4>
-                  <p>Configure application settings</p>
-                  <button className="action-btn">Configure</button>
-                </div>
-              )}
-            </div>
           </div>
         )}
 

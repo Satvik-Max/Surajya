@@ -15,6 +15,44 @@
   transition: background 0.2s;
 }
 
+/* App.css additions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.escalation-btn {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.escalation-btn:hover {
+  background: #45a049;
+}
+
+.system-status {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
 .back-btn:hover {
   background: rgba(255, 255, 255, 0.3);
 }
