@@ -1,0 +1,162 @@
+/* EmailVerification.css (new file) */
+.verification-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7f9 0%, #e4e8f0 100%);
+  padding: 1rem;
+}
+
+.verification-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.verification-header h2 {
+  font-size: 1.8rem;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.verification-header p {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.verification-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  color: #3b82f6;
+}
+
+.verification-instructions {
+  background: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.verification-instructions p {
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+}
+
+.verification-instructions p:last-child {
+  margin-bottom: 0;
+}
+
+.verification-message {
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.verification-message.success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.verification-message.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.verification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.resend-button, .back-button {
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resend-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.resend-button:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.resend-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.back-button {
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+}
+
+.back-button:hover {
+  background: #f9fafb;
+}
+/* EmailVerification.css - updated */
+.manual-login-button {
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #10b981;
+  color: white;
+  border: none;
+}
+
+.manual-login-button:hover {
+  background: #059669;
+}
+
+.verification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .verification-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .back-button {
+    order: 3;
+    margin-left: auto;
+  }
+  
+  .manual-login-button {
+    order: 2;
+  }
+  
+  .resend-button {
+    order: 1;
+  }
+}
+
+@media (min-width: 640px) {
+  .verification-actions {
+    flex-direction: row;
+  }
+  
+  .back-button {
+    order: -1;
+  }
+}
