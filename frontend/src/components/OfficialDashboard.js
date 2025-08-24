@@ -118,7 +118,7 @@ const OfficialDashboard = ({ level, user }) => {
     alert(`✅ OTP sent successfully to ${grievance.email}`);
     setSelectedGrievance(grievance);
     setOtpSent(true);
-
+    console.log(otpSent)
   } catch (error) {
     console.error("Error sending OTP:", error);
     alert("❌ Failed to send OTP. Please try again.");

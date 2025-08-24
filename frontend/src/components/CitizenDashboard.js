@@ -1,4 +1,3 @@
-// components/CitizenDashboard.js
 import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 import { getContract, getAccount, initWeb3, getWeb3 } from "../utils/web3";
@@ -54,6 +53,61 @@ const CitizenDashboard = ({ user }) => {
     }
   }, [activeTab, initializeWeb3, fetchMyGrievances]);
 
+ const assignPriorityAndLevel = async (grievance) => {
+  try {
+    const { data: rules } = await supabase.from("priority_rules").select("*");
+
+    let rule = rules.find(r => r.category === grievance.category);
+
+    if (!rule) {
+      const { data: newRule, error: insertError } = await supabase
+        .from("priority_rules")
+        .insert([{
+          category: grievance.category,
+          base_priority: 3,  
+          keywords: []       
+        }])
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+      rule = newRule;
+      console.log(`✅ Added new category to priority_rules: ${grievance.category}`);
+    }
+
+    const priority = rule.base_priority;
+
+    let level = grievance.assigned_level;
+    let auto_escalated = false;
+
+     if (priority >= 9) {
+      level = 3; 
+      auto_escalated = true;
+    } else if (priority === 7 || priority === 8) {
+      level = 2; 
+    } else {
+      level = 1; 
+    }
+
+    const { data, error } = await supabase
+      .from("grievances")
+      .update({
+        priority,
+        assigned_level: level,
+        auto_escalated
+      })
+      .eq("id", grievance.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Error assigning priority:", error);
+    return grievance;
+  }
+};
+
   const handleGrievanceCreated = async (grievanceData) => {
     setNetworkError(false);
     try {
@@ -61,7 +115,6 @@ const CitizenDashboard = ({ user }) => {
         await initializeWeb3();
       }
 
-      // First create on blockchain
       const contract = getContract();
       const account = getAccount();
       const web3Instance = getWeb3();
@@ -108,7 +161,11 @@ const CitizenDashboard = ({ user }) => {
       }
 
       console.log("Supabase insert successful:", data);
-      setGrievances(prev => [data, ...prev]);
+
+      // 🔹 Immediately assign priority + auto-escalate if needed
+      const updated = await assignPriorityAndLevel(data);
+
+      setGrievances(prev => [updated, ...prev]);
       setActiveTab("my-grievances");
       
     } catch (error) {
@@ -183,6 +240,11 @@ const CitizenDashboard = ({ user }) => {
                       <span className={`status-badge ${grievance.status}`}>
                         {grievance.status}
                       </span>
+                      {grievance.priority && (
+                        <span className={`priority-badge ${grievance.priority >= 9 ? 'high' : grievance.priority >= 6 ? 'medium' : 'low'}`}>
+                          Priority: {grievance.priority}
+                        </span>
+                      )}
                     </div>
                     <p className="grievance-description">{grievance.description}</p>
                     {grievance.location && (
@@ -191,6 +253,9 @@ const CitizenDashboard = ({ user }) => {
                     <div className="grievance-meta">
                       <span>ID: #{grievance.blockchain_id || grievance.id}</span>
                       <span>Level: {grievance.assigned_level}</span>
+                      {grievance.auto_escalated && (
+                        <span className="auto-escalated-badge">⚡ Auto-Escalated</span>
+                      )}
                       <span>Filed: {new Date(grievance.created_at).toLocaleDateString()}</span>
                     </div>
                     {grievance.image_url && (

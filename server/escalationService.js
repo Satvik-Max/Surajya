@@ -4,7 +4,7 @@ const supabase = require("./supabase");
 class EscalationService {
   static async checkAndEscalate() {
     try {
-      console.log("🔍 Checking for grievances needing escalation...");
+      console.log(" Checking for grievances needing escalation...");
 
       // Get pending grievances that can be escalated (levels 1-2)
       const { data: grievances, error } = await supabase
@@ -25,7 +25,7 @@ class EscalationService {
         }
       }
 
-      console.log(`✅ Escalation check complete. ${escalatedCount} grievances escalated.`);
+      console.log(`Escalation check complete. ${escalatedCount} grievances escalated.`);
     } catch (error) {
       console.error("❌ Escalation check failed:", error);
     }
@@ -48,7 +48,7 @@ class EscalationService {
   static async escalateGrievance(grievance) {
     const newLevel = grievance.assigned_level + 1;
 
-    console.log(`⬆️ Escalating grievance #${grievance.id} from level ${grievance.assigned_level} to ${newLevel}`);
+    console.log(` Escalating grievance #${grievance.id} from level ${grievance.assigned_level} to ${newLevel}`);
 
     const { error } = await supabase
       .from("grievances")
@@ -64,9 +64,8 @@ class EscalationService {
       throw error;
     }
 
-    console.log(`✅ Successfully escalated grievance #${grievance.id}`);
+    console.log(` Successfully escalated grievance #${grievance.id}`);
   }
 }
 
-// ✅ Export correctly for require()
 module.exports = EscalationService;
